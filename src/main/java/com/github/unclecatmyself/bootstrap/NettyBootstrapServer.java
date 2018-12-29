@@ -63,7 +63,9 @@ public class NettyBootstrapServer extends AbstractBootstrapServer {
                 .childOption(ChannelOption.TCP_NODELAY, serverBean.isNodelay())
                 .childOption(ChannelOption.SO_KEEPALIVE, serverBean.isKeepalive())
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-        bootstrap.bind(IpUtils.getHost(),serverBean.getWebport()).addListener((ChannelFutureListener) channelFuture -> {
+        
+        bootstrap.bind(IpUtils.getHost(), serverBean.getWebport())
+                 .addListener((ChannelFutureListener) channelFuture -> {
             if (channelFuture.isSuccess()) {
                 log.info("服务端启动成功【" + IpUtils.getHost() + ":" + serverBean.getWebport() + "】");
             }else{

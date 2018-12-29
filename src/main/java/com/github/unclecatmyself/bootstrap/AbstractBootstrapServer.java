@@ -1,6 +1,8 @@
 package com.github.unclecatmyself.bootstrap;
 
 
+import java.util.concurrent.TimeUnit;
+
 import com.github.unclecatmyself.auto.ConfigFactory;
 import com.github.unclecatmyself.bootstrap.channel.WebSocketHandlerService;
 import com.github.unclecatmyself.bootstrap.handler.DefaultWebSocketHandler;
@@ -22,16 +24,21 @@ public abstract class AbstractBootstrapServer implements BootstrapServer {
      * @param channelPipeline  channelPipeline
      * @param serverBean  服务配置参数
      */
-    protected  void initHandler(ChannelPipeline channelPipeline, InitNetty serverBean){
+    protected void initHandler(ChannelPipeline channelPipeline, InitNetty serverBean){
         intProtocolHandler(channelPipeline,serverBean);
-        channelPipeline.addLast(new IdleStateHandler(serverBean.getHeart(),0,0));
+        //入参说明: 读超时时间、写超时时间、所有类型的超时时间、时间格式
+        channelPipeline.addLast(new IdleStateHandler(serverBean.getHeart(), 0, 0,TimeUnit.SECONDS));
         channelPipeline.addLast(new DefaultWebSocketHandler(new WebSocketHandlerService(new DataAsynchronousTask(ConfigFactory.inChatToDataBaseService),ConfigFactory.inChatVerifyService)));
     }
 
-    private  void intProtocolHandler(ChannelPipeline channelPipeline,InitNetty serverBean){
+    private void intProtocolHandler(ChannelPipeline channelPipeline,InitNetty serverBean){
+    	// 编解码 http请求
         channelPipeline.addLast("httpCode",new HttpServerCodec());
+        // 保证接收的 Http请求的完整性
         channelPipeline.addLast("aggregator", new HttpObjectAggregator(serverBean.getMaxContext()));
+        // 写文件内容
         channelPipeline.addLast("chunkedWrite",new ChunkedWriteHandler());
+        // 处理其他的 WebSocketFrame
         channelPipeline.addLast("webSocketHandler",new WebSocketServerProtocolHandler(serverBean.getWebSocketPath()));
     }
 

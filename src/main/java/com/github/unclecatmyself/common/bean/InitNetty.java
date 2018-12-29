@@ -33,7 +33,7 @@ public class InitNetty {
 
     private int initalDelay = 10;
 
-    private int maxContext = 65536;
+    private int maxContext = 64 * 1024;
 
     private String webSocketPath = "/ws";
 

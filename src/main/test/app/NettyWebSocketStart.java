@@ -37,7 +37,9 @@ public class NettyWebSocketStart {
 			
 			@Override
 			public JSONArray getArrayByGroupId(String groupId) {
-				return null;
+				 //根据群聊id获取对应的群聊人员ID
+		        JSONArray jsonArray = JSONArray.parseArray("[\"1111\",\"2222\",\"3333\"]");
+		        return jsonArray;
 			}
 		};
 		
